@@ -97,11 +97,11 @@ class BlenderImporterAPI(ModellingAPI):
         blenderArmature = bpy.data.armatures.new('%s Armature'%filename)
         arm_ob = bpy.data.objects.new('%s Armature'%filename, blenderArmature)
         bpy.context.scene.collection.objects.link(arm_ob)
-        bpy.context.scene.update()
-        arm_ob.select = True
+        bpy.context.view_layer.update()
+        arm_ob.select_set(True)
         #arm_ob.show_x_ray = True
-        bpy.context.scene.collection.objects.active = arm_ob
-        blenderArmature.draw_type = 'STICK'
+        bpy.context.view_layer.objects.active = arm_ob
+        blenderArmature.display_type = 'STICK'
         bpy.ops.object.mode_set(mode='EDIT')
         
         empty = BlenderImporterAPI.createParentBone(blenderArmature)
@@ -165,7 +165,7 @@ class BlenderImporterAPI(ModellingAPI):
     @staticmethod
     def clearSelection():
         for ob in bpy.context.selected_objects:
-            ob.select = False
+            ob.select_set(False)
      
     @staticmethod
     def linkEmptyTree(context):
@@ -181,11 +181,11 @@ class BlenderImporterAPI(ModellingAPI):
                     ob.modifiers.remove(modifier)
                 else:
                     bpy.context.scene.collection.objects.active = ob
-                    ob.select = True
+                    ob.select_set(True)
                     bpy.ops.object.mode_set(mode = 'EDIT')
                     bpy.ops.object.hook_reset(modifier = armature[bone].name)
                     bpy.ops.object.mode_set(mode = 'OBJECT')
-                    ob.select = False
+                    ob.select_set(False)
                     bpy.context.scene.collection.objects.active = None
 
     @staticmethod
@@ -567,7 +567,7 @@ class BlenderImporterAPI(ModellingAPI):
         constraint.target = armature[box.bone()] if box.bone() in armature else None
         lattice["Type"] = "MOD3_BoundingBox_AABB"
         bpy.context.scene.collection.objects.link(lattice_ob)
-        bpy.context.scene.update()
+        bpy.context.view_layer.update()
         return lattice_ob
     
     @staticmethod
@@ -586,7 +586,7 @@ class BlenderImporterAPI(ModellingAPI):
         constraint.target = armature[box.bone()] if box.bone() in armature else None
         lattice["Type"] = "MOD3_BoundingBox_MVBB"
         bpy.context.scene.collection.objects.link(lattice_ob)
-        bpy.context.scene.update()
+        bpy.context.view_layer.update()
         return lattice_ob
 
     @staticmethod
