@@ -108,7 +108,7 @@ class BlenderExporterAPI(ModellingAPI):
     def showMessageBox(message = "", title = "Message Box", icon = 'INFO'):
     
         def draw(self, context):
-            self.layout.label(message)
+            self.layout.label(text = message)
     
         bpy.context.window_manager.popup_menu(draw, title = title, icon = icon)
     
@@ -199,7 +199,7 @@ class BlenderExporterAPI(ModellingAPI):
     @staticmethod
     def listMeshes(options):
         return sorted([o for o in bpy.context.scene.objects 
-                       if o.type=="MESH" and (options.exportHidden or not o.hide)
+                       if o.type=="MESH" and (options.exportHidden or not o.hide_get())
                            and not("Type" in o.data and o.data["Type"]=="MOD3_VM_Mesh")
                            and not("Type" in o.data and o.data["Type"]=="MHW_Ctrl_Structure")
                            and len(o.data.vertices)]
@@ -244,7 +244,7 @@ class BlenderExporterAPI(ModellingAPI):
                 if name in groupToBone:
                     skeletonElement = skeletonMap[groupToBone[name]]
                     boneCoordinates = skeletonMap.getBoneByName(groupToBone[name]).matrix_world.inverted()
-                    groups[skeletonElement].append((boneCoordinates*vertex.co).freeze())
+                    groups[skeletonElement].append((boneCoordinates@vertex.co).freeze())
         return {k:list(set(i)) for k,i in groups.items() if len(i)>0}
     
     @staticmethod
@@ -359,7 +359,7 @@ class BlenderExporterAPI(ModellingAPI):
             return 0
         if "Type" in rootCandidate:
             if rootCandidate["Type"] == "MOD3_SkeletonRoot":
-                if rootCandidate.hide:
+                if rootCandidate.hide_get():
                     return 3
                 return 4
             else:
